@@ -17,22 +17,20 @@
 const request = require('request');
 const Twitter = require('twitter');
 
-const client = new Twitter({
-  consumer_key: 'YOUR_TWITTER_KEY',
-  consumer_secret: 'YOUR_TWITTER_SECRET',
-  access_token_key: 'YOUR_ACCESS_TOKEN',
-  access_token_secret: 'YOUR_ACCESS_SECRET'
-});
+// Local data
+const config = require('./local.json')
+
+const client = new Twitter(config.twitter);
 
 // Set up BigQuery
 // Replace this with the name of your project and the path to your keyfile
 const gcloud = require('google-cloud')({
-  keyFilename: '/path/to/keyfile.json',
-  projectId: 'cloud-project-id'
+  keyFilename: config.keyfile_path,
+  projectId: config.cloud_project_id
 });
 const bigquery = gcloud.bigquery();
-const dataset = bigquery.dataset('bigquery-dataset');
-const table = dataset.table('bigquery_table');
+const dataset = bigquery.dataset(config.bigquery_dataset);
+const table = dataset.table(config.bigquery_table);
 
 // Replace searchTerms with whatever tweets you want to stream
 // Details here: https://dev.twitter.com/streaming/overview/request-parameters#track
@@ -55,7 +53,7 @@ client.stream('statuses/filter', {track: searchTerms, language: 'en'}, function(
 });
 
 function callNLApi(tweet) {
-	const textUrl = "https://language.googleapis.com/v1beta1/documents:annotateText?key=YOUR_API_KEY"
+	const nlApiUrl = "https://language.googleapis.com/v1beta1/documents:annotateText?key=YOUR_API_KEY"
 
 	let requestBody = {
 		"document": {
@@ -69,7 +67,7 @@ function callNLApi(tweet) {
 	}
 
 	let options = {
-		url: textUrl,
+		url: nlApiUrl,
 		method: "POST",
 		body: requestBody,
 		json: true
