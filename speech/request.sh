@@ -1,5 +1,19 @@
 #!/bin/bash
 
+# Copyright 2017 Google Inc.
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+#     http://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 # Create a request file with our JSON request in the current directory
 FILENAME="request-"`date +"%s".json`
 cat <<EOF > $FILENAME
@@ -8,9 +22,8 @@ cat <<EOF > $FILENAME
     "encoding":"FLAC",
     "sample_rate":16000,
     "languageCode": "en-US",
-    "profanityFilter": true,
     "speechContext": {
-      "phrases": ['Devoxx']
+      "phrases": ['devfest']
     }
   },
   "audio": {
@@ -28,7 +41,7 @@ fi
 # Record an audio file, base64 encode it, and update our request object
 read -p "Press enter when you're ready to record" rec
 if [ -z $rec ]; then
-  rec --channels=1 --bits=16 --rate=16000 audio.flac trim 0 2
+  rec --channels=1 --bits=16 --rate=16000 audio.flac trim 0 5
   echo \"`base64 audio.flac`\" > audio.base64
   sed -i '' -e '/"content":/r audio.base64' $FILENAME
 fi
