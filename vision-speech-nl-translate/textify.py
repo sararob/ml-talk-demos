@@ -25,7 +25,7 @@ from pygments import highlight, lexers, formatters
 # Audio recording duration
 duration = 5
 
-# Langs supported by Premium Translation
+# Languages supported by Neural Machine Translation
 supported_languages = {"German":"de", "Spanish":"es", "French":"fr", "Japanese":"ja", "Korean":"ko", "Portuguese":"pt", "Turkish":"tr", "Chinese(Simplified)":"zh-CN"}
 
 
