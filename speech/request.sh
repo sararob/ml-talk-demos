@@ -23,8 +23,9 @@ cat <<EOF > $FILENAME
     "sample_rate":16000,
     "languageCode": "en-US",
     "speechContext": {
-      "phrases": ['devfest']
-    }
+      "phrases": ['']
+    },
+    "maxAlternatives": 1
   },
   "audio": {
     "content":
