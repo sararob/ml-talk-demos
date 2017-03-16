@@ -53,7 +53,7 @@ client.stream('statuses/filter', {track: searchTerms, language: 'en'}, function(
 });
 
 function callNLApi(tweet) {
-	const nlApiUrl = "https://language.googleapis.com/v1beta1/documents:annotateText?key=YOUR_API_KEY"
+	const nlApiUrl = "https://language.googleapis.com/v1beta1/documents:annotateText?key=" + config.nl_api_key
 
 	let requestBody = {
 		"document": {
