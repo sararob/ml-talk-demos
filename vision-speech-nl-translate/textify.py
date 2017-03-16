@@ -11,33 +11,34 @@
 from __future__ import print_function
 import base64
 import json
-import sys
 import io
 import os
-import logging
 import readline
-import ffmpy
 import time
+import ffmpy
 import httplib2
 from googleapiclient import discovery
 from oauth2client.client import GoogleCredentials
 from google.cloud import translate
 from pick import pick
+from termcolor import colored
 import sounddevice as sd
 import scipy.io.wavfile as scipy
-from termcolor import colored, cprint
 from pygments import highlight, lexers, formatters
-# Audio recording duration
-duration = 5
+# Audio recording duration and sample rate
+DURATION = 5
+SAMPLE_RATE = 16000
 # Languages supported by Neural Machine Translation
-supported_languages = {"German":"de", "Spanish":"es", "French":"fr",
-                       "Japanese":"ja", "Korean":"ko", "Portuguese":"pt",
-                       "Turkish":"tr", "Chinese(Simplified)":"zh-CN"}
+SUPPORTED_LANGUAGES = {"German": "de", "Spanish": "es", "French": "fr",
+                       "Japanese": "ja", "Korean": "ko", "Portuguese": "pt",
+                       "Turkish": "tr", "Chinese(Simplified)": "zh-CN"}
 # [START authenticating]
 DISCOVERY_URL = ('https://{api}.googleapis.com/$discovery/rest?'
                  'version={apiVersion}')
 # Application default credentials provided by env variable
 # GOOGLE_APPLICATION_CREDENTIALS
+
+
 def get_service(api, version):
     credentials = GoogleCredentials.get_application_default().create_scoped(
         ['https://www.googleapis.com/auth/cloud-platform'])
@@ -46,6 +47,8 @@ def get_service(api, version):
     return discovery.build(
         api, version, http=http, discoveryServiceUrl=DISCOVERY_URL)
 # [END authenticating]
+
+
 def call_nl_api(text):
     service = get_service('language', 'v1')
     service_request = service.documents().annotateText(
@@ -62,9 +65,13 @@ def call_nl_api(text):
         }
     )
     response = service_request.execute()
-    print(colored("\nHere's the JSON repsonse for one token of your text:\n", "cyan"))
+    print(colored("\nHere's the JSON repsonse" +
+                  "for one token of your text:\n",
+                  "cyan"))
     formatted_json = json.dumps(response['tokens'][0], indent=2)
-    colorful_json = highlight(formatted_json, lexers.JsonLexer(), formatters.TerminalFormatter())
+    colorful_json = highlight(formatted_json,
+                              lexers.JsonLexer(),
+                              formatters.TerminalFormatter())
     print(colorful_json)
     score = response['documentSentiment']['score']
     output_text = colored(analyze_sentiment(score), "cyan")
@@ -72,13 +79,15 @@ def call_nl_api(text):
         entities = str(analyze_entities(response['entities']))
         output_text += colored("\nEntities found: " + entities, "cyan")
     return [output_text, response['language']]
+
+
 def translate_text_with_model(text, model=translate.NMT):
     # Translates text into the target language.
     title = "Which language would you like to translate it to?"
     options = ["German", "Spanish", "French", "Japanese",
                "Korean", "Portuguese", "Turkish", "Chinese(Simplified)"]
     lang, index = pick(options, title)
-    lang_code = supported_languages[lang]
+    lang_code = SUPPORTED_LANGUAGES[lang]
     translate_client = translate.Client()
     result = translate_client.translate(
         text,
@@ -88,36 +97,42 @@ def translate_text_with_model(text, model=translate.NMT):
         result['translatedText'],
         target_language="en",
         model=model)
-    print(colored(("Translated in " + lang + ": " + result['translatedText']), "cyan"))
+    print(colored(("Translated in " + lang +
+                   ": " + result['translatedText']), "cyan"))
     print(colored("Your text translated back to English: " +
                   translate_back['translatedText'], "cyan"))
+
+
 def call_speech():
-    s = input(colored("Press enter to start recording " +
-                      str(duration) + " seconds of audio", "cyan"))
-    if s == "":
+    speech_prompt = input(colored("Press enter to start recording " +
+                                  str(DURATION) + " seconds of audio", "cyan"))
+    if speech_prompt == "":
         # Record audio and write to file using sounddevice
-        fs = 16000
-        myrecording = sd.rec(duration * fs, samplerate=fs, channels=1, blocking=True)
+        myrecording = sd.rec(DURATION * SAMPLE_RATE,
+                             samplerate=SAMPLE_RATE,
+                             channels=1,
+                             blocking=True)
         print(colored("Writing your audio to a file...", "magenta"))
-        scipy.write('test.wav', fs, myrecording)
+        scipy.write('test.wav', SAMPLE_RATE, myrecording)
         filename = 'speech-' + str(int(time.time())) + '.flac'
-        ff = ffmpy.FFmpeg(
-            inputs={'test.wav':None},
-            outputs={filename:None}
+        rec = ffmpy.FFmpeg(
+            inputs={'test.wav': None},
+            outputs={filename: None}
         )
-        ff.run()
+        rec.run()
         # Encode audio file and call the Speech API
         with io.open(filename, "rb") as speech:
             # Base64 encode the binary audio file for inclusion in the JSON
             # request.
             speech_content = base64.b64encode(speech.read())
         service = get_service('speech', 'v1beta1')
-        print(colored("Transcribing your audio with the Speech API...", "magenta"))
+        print(colored("Transcribing your audio with the Speech API...",
+                      "magenta"))
         service_request = service.speech().syncrecognize(
             body={
                 'config': {
                     'encoding': 'FLAC',  # raw 16-bit signed LE samples
-                    'sampleRate': 16000,  # 16 khz
+                    'sampleRate': SAMPLE_RATE,  # 16 khz
                     'languageCode': 'en-US',  # a BCP-47 language tag
                 },
                 'audio': {
@@ -125,11 +140,13 @@ def call_speech():
                     }
                 })
         response = service_request.execute()
-        transcribed_text = response['results'][0]['alternatives'][0]['transcript']
-        return transcribed_text
-def call_vision(file):
+        text_response = response['results'][0]['alternatives'][0]['transcript']
+        return text_response
+
+
+def call_vision(filename):
     service = get_service('vision', 'v1')
-    with open(file, 'rb') as image:
+    with open(filename, 'rb') as image:
         image_content = base64.b64encode(image.read())
         service_request = service.images().annotate(body={
             'requests': [{
@@ -144,6 +161,8 @@ def call_vision(file):
         response = service_request.execute()
         ocr_text = response['responses'][0]['textAnnotations'][0]['description']
         return ocr_text
+
+
 def analyze_sentiment(score):
     sentiment_str = "You seem "
     if -1 <= score < -0.5:
@@ -153,41 +172,51 @@ def analyze_sentiment(score):
     else:
         sentiment_str += "very happy! Yay :)"
     return sentiment_str + "\n"
+
+
 def analyze_entities(entities):
     arr = []
     for entity in entities:
         if 'wikipedia_url' in entity['metadata']:
-            arr.append(entity['name'] + ': ' + entity['metadata']['wikipedia_url'])
+            arr.append(entity['name'] + ': ' +
+                       entity['metadata']['wikipedia_url'])
         else:
             arr.append(entity['name'])
     return arr
+
+
 def handle_nl_and_translate_call(text):
     nl_response = call_nl_api(text)
     analyzed_text = nl_response[0]
-    text_lang = nl_response[1]
     print(analyzed_text)
     translate_ready = input(colored("Next, we'll translate your text using" +
                                     "Neural Machine Translation.\n" +
                                     "Press enter when you're ready\n", "cyan"))
     if translate_ready == "":
         translate_text_with_model(text)
-print(colored("We're going to send some text to the Natural Language API!\nIt supports English, Spanish, and Japanese.\n", "cyan"))
-step_one = input(colored("Enter 't' to type your text,\n'r' to record your text,\nor 'p' to send a photo with text: ", "cyan"))
+
+
+print(colored("We're going to send some text to the Natural Language API!\n" +
+              "It supports English, Spanish, and Japanese.\n", "cyan"))
+STEP_ONE = input(colored("Enter 't' to type your text,\n" +
+                         "'r' to record your text,\n" +
+                         "or 'p' to send a photo with text: ", "cyan"))
 print("\r")
-if step_one == 't':
-    nl_text = input(colored("Enter your text to send\n", "cyan"))
-    handle_nl_and_translate_call(nl_text)
-elif step_one == 'r':
-    transcribed_text = call_speech()
-    print("You said: " + transcribed_text)
-    handle_nl_and_translate_call(transcribed_text)
-elif step_one == 'p':
+if STEP_ONE == 't':
+    NL_TEXT = input(colored("Enter your text to send\n", "cyan"))
+    handle_nl_and_translate_call(NL_TEXT)
+elif STEP_ONE == 'r':
+    TRANSCRIBED_TEXT = call_speech()
+    print("You said: " + TRANSCRIBED_TEXT)
+    handle_nl_and_translate_call(TRANSCRIBED_TEXT)
+elif STEP_ONE == 'p':
     # Get image url
-    url = input(colored("Enter the filepath of your image: ", "cyan"))
-    if os.path.exists(url):
-        print(colored("Valid image URL, sending your image to the Vision API...", "cyan"))
-        img_text = call_vision(url)
-        print(colored("Found this text in your image: \n" + img_text, "cyan"))
-        handle_nl_and_translate_call(img_text)
+    URL = input(colored("Enter the filepath of your image: ", "cyan"))
+    if os.path.exists(URL):
+        print(colored("Valid image URL, sending your image" +
+                      "to the Vision API...", "cyan"))
+        IMG_TEXT = call_vision(URL)
+        print(colored("Found this text in your image: \n" + IMG_TEXT, "cyan"))
+        handle_nl_and_translate_call(IMG_TEXT)
 else:
-    step_one = input("That's not a valid entry.")
+    STEP_ONE = input("That's not a valid entry.")
