@@ -1,0 +1,95 @@
+body {
+	margin: 10px;
+	background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif;
+}
+
+
+#c {
+	display: none;
+}
+
+.chart-container {
+	width: 100% !important;
+	max-width: 800px;
+	height: auto !important;
+}
+
+
+.grid-3-section {
+	background-color: #E0E0E0;
+}
+
+@media (min-width: 0px) and (max-width: 500px) {
+	#loadFileXml {
+		display: block;
+		padding-bottom: 3px;
+		-webkit-appearance: none;
+	   	width: 60%;
+	    margin-left: 20%;
+	    margin-right:20%;
+	}
+}
+
+#total-selfies {
+    color: rgb(63,81,181);
+}
+
+#latest-selfie, #user-latest-img {
+	width: 120px;
+}
+
+img {
+	border-radius: 5px;
+}
+
+.data-spinner-container {
+	margin: 10px;
+
+}
+
+.permission-denied {
+	visibility: hidden;
+	color: #C5CAE9;
+}
+
+.mdl-spinner {
+	display: block;
+	margin-top: 15px;
+}
+
+.mdl-layout__header-row {
+	padding-left: 40px;
+}
+
+#loadFileXml.btn {
+	background-color: white;
+}
+
+.icon {
+	width: 40px;
+    margin-right: 20px;
+    margin-left: -60px;
+}
+
+span.cell-header {
+	color: rgb(63,81,181);
+	font-size: 16px;
+	font-weight: bold;
+	margin-bottom: 5px;
+}
+
+
+.selfie-grid {
+	text-align: center;
+	margin-bottom: 35px;
+}
+
+.selfie-container {
+	margin-bottom: 35px;
+}
+
+.graph-header-sec {
+	text-align: center;
+	font-size: 20px;
+	font-weight: bold;
+}

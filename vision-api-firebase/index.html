@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Realtime Photo Fun</title>
+    <link rel="stylesheet" href="main.css">
+    <!-- update the version number as needed -->
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.bundle.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+    <!-- <script src="https://www.gstatic.com/firebasejs/3.9.0/firebase.js"></script> -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
+<script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+    <script src="/__/firebase/3.9.0/firebase-app.js"></script>
+    <!-- include only the Firebase features as you need -->
+    <script src="/__/firebase/3.9.0/firebase-auth.js"></script>
+    <script src="/__/firebase/3.9.0/firebase-database.js"></script>
+    <script src="/__/firebase/3.9.0/firebase-messaging.js"></script>
+    <script src="/__/firebase/3.9.0/firebase-storage.js"></script>
+    <!-- initialize the SDK after all desired features are loaded -->
+    <script src="/__/firebase/init.js"></script>
+    <script src="https://wurfl.io/wurfl.js"></script>
+    <script src="main.js"></script>
+
+  </head>
+  <body>
+    <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+      <header class="mdl-layout__header">
+        <div class="mdl-layout__header-row">
+          <img src="icon.png" class="icon"/>
+          <input type="button" id="loadFileXml" value="Add a photo!" onclick="document.getElementById('img-select').click();" class="mdl-button mdl-js-button mdl-button--raised btn"/>
+          <input type="file" style="display:none;" id="img-select" name="file" accept="image/*" capture="camera"/>
+          <div class="mdl-layout-spacer"></div>
+          <div class="data-spin-container">
+            <div class="mdl-spinner mdl-js-spinner img-load-spinner"></div>
+            <div class="permission-denied">Permission Denied</div>
+          </div>
+
+        </div>
+      </header>
+
+      <main class="mdl-layout__content">
+        <div class="page-content">
+        <canvas id="c"></canvas>
+          <div class="mdl-grid desktop latest grid-3-section">
+              <div class="mdl-cell mdl-cell--4-col selfie-grid desktop">
+                <span class="cell-header"><h4>Latest photo</h4></span>
+
+                <div class="selfie-container"><img id="latest-selfie"/></div>
+              </div>
+
+            <div class="mdl-cell mdl-cell--4-col selfie-grid only-mobile">
+              <span class="cell-header"><h4>Latest image data</h4></span>
+              <div id="user-img-data"></div>
+                <div class="data-spin-container">
+                  <div class="mdl-spinner mdl-js-spinner data-load-spinner"></div>
+                </div>
+
+
+            </div>
+            <div class="mdl-cell mdl-cell--4-col selfie-grid">
+            <div id="total-selfies"><h4>Total photos: <span id="num-selfies"></span></h4></div>
+            </div>
+          </div>
+
+
+          <div class="mdl-grid">
+            <div class="mdl-cell mdl-cell--5-col">
+              <div class="chart-container"><canvas id="faceChart" width="500" height="500"></canvas></div>
+            </div>
+            <div class="mdl-cell mdl-cell--1-col"></div>
+            <div class="mdl-cell mdl-cell--6-col">
+              <div class="chart-container"><canvas id="labelsChart" width="500" height="500"></canvas></div>
+            </div>
+          </div>
+          <br/>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>
