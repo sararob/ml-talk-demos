@@ -56,5 +56,5 @@ if [ -z $var ];
   then
     echo "Running the following curl command:"
     echo "curl -s -X POST -H 'Content-Type: application/json' --data-binary @${FILENAME} https://speech.googleapis.com/v1beta1/speech:syncrecognize?key=API_KEY"
-    curl -s -X POST -H "Content-Type: application/json" --data-binary @${FILENAME} https://speech.googleapis.com/v1beta1/speech:syncrecognize?key=AIzaSyDbPTZBJkjvLpvJdNQ33H4NbJyHFWZawMg
+    curl -s -X POST -H "Content-Type: application/json" --data-binary @${FILENAME} https://speech.googleapis.com/v1beta1/speech:syncrecognize?key=YOUR_API_KEY
 fi

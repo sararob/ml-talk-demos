@@ -1,6 +1,3 @@
-'use strict';
-
-const functions = require('firebase-functions');
 // Copyright 2017 Google Inc.
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,6 +12,9 @@ const functions = require('firebase-functions');
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+'use strict';
+
+const functions = require('firebase-functions');
 const config = require('./local.json');
 
 const fbConfig = {
@@ -24,8 +24,8 @@ const fbConfig = {
 
 const vision = require('@google-cloud/vision')(fbConfig);
 
-var admin = require("firebase-admin");
-var serviceAccount = require("./keyfile.json");
+const admin = require("firebase-admin");
+const serviceAccount = require("./keyfile.json");
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
   databaseURL: "https://your-firebase-project-id.firebaseio.com"
@@ -49,7 +49,7 @@ function detectFacesAndLabels(faces, entities) {
           let emotion = emotions[j];
           if ((face[emotion + 'Likelihood'] === "VERY_LIKELY") || (face[emotion + 'Likelihood'] === "LIKELY") || (face[emotion + 'Likelihood'] === "POSSIBLE")) {
             faceRef.child(emotion).transaction(function(data) {
-              if (data != null) {
+              if (data !== null) {
                 data++;
               } else {
                 data = 1;
@@ -66,8 +66,8 @@ function detectFacesAndLabels(faces, entities) {
         let entity = entities[i].description.toLowerCase();
         entity.replace(/\.|#|\$|\[|\]|\//g,''); // Remove ".", "#", "$", "[", or "]" (illegal Firebase path name)
         entitiesRef.child(entity).transaction(function(data) {
-          if (data != null) {
-            data++
+          if (data !== null) {
+            data++;
           } else {
             data= 1;
           }
@@ -123,7 +123,7 @@ exports.callVision = functions.storage.object().onChange(event => {
             "type": "SAFE_SEARCH_DETECTION"
           }
         ]
-      }
+      };
 
       return vision.annotate(visionReq);
     })
@@ -133,7 +133,7 @@ exports.callVision = functions.storage.object().onChange(event => {
       imageRef.push(imgMetadata);
       userRef.child('visionData').set(imgMetadata);
       latestImgDataRef.set(imgMetadata);
-      return detectFacesAndLabels(imgMetadata['faceAnnotations'], imgMetadata['webDetection']['webEntities']);
+      return detectFacesAndLabels(imgMetadata.faceAnnotations, imgMetadata.webDetection.webEntities);
     })
     .then(() => {
       console.log(`Parsed vision annotation and wrote to Firebase`);

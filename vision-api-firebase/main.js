@@ -12,21 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-let storage = firebase.storage();
-let storageRef = storage.ref();
-let db = firebase.database();
+const storage = firebase.storage();
+const storageRef = storage.ref();
+const db = firebase.database();
 
-let facesRef = db.ref('faces');
-let labelsRef = db.ref('labels');
-let entitiesRef = db.ref('entities');
-let latestImageRef = db.ref('latest');
-let numPhotosRef = db.ref('images');
-let devicesRef = db.ref('devices');
-let latestImgDataRef = db.ref('latestImgData');
+const facesRef = db.ref('faces');
+const labelsRef = db.ref('labels');
+const entitiesRef = db.ref('entities');
+const latestImageRef = db.ref('latest');
+const numPhotosRef = db.ref('images');
+const devicesRef = db.ref('devices');
+const latestImgDataRef = db.ref('latestImgData');
+const emotions = ['joy', 'anger', 'sorrow', 'surprise'];
+const provider = new firebase.auth.TwitterAuthProvider();
+
+let isiPhone = false;
 let userId;
 let userRef;
-const emotions = ['joy', 'anger', 'sorrow', 'surprise'];
-let isiPhone = false;
 
 // Set default chart settings
 Chart.defaults.global.defaultFontColor = '#3F51B5';
@@ -58,42 +60,13 @@ function writeImgtoFb(dataURL, imageRef) {
 }
 
 
-var provider = new firebase.auth.TwitterAuthProvider();
 
-// iPhones do a weird image rotation thing - this checks for iPhone and rotates the image in getOrientation()
+
+// iPhones do a weird image rotation thing - this checks for iPhone using WURFL
 function checkIfiPhone(deviceType) {
     if (deviceType.toLowerCase().includes('iphone')) {
         isiPhone = true;
     }
-}
-
-
-function getOrientation(file, callback) {
-  var reader = new FileReader();
-  reader.onload = function(e) {
-
-    var view = new DataView(e.target.result);
-    if (view.getUint16(0, false) != 0xFFD8) return callback(-2);
-    var length = view.byteLength, offset = 2;
-    while (offset < length) {
-      var marker = view.getUint16(offset, false);
-      offset += 2;
-      if (marker == 0xFFE1) {
-        if (view.getUint32(offset += 2, false) != 0x45786966) return callback(-1);
-        var little = view.getUint16(offset += 6, false) == 0x4949;
-        offset += view.getUint32(offset + 4, little);
-        var tags = view.getUint16(offset, little);
-        offset += 2;
-        for (var i = 0; i < tags; i++)
-          if (view.getUint16(offset + (i * 12), little) == 0x0112)
-            return callback(view.getUint16(offset + (i * 12) + 8, little));
-      }
-      else if ((marker & 0xFF00) != 0xFF00) break;
-      else offset += view.getUint16(offset, false);
-    }
-    return callback(-1);
-  };
-  reader.readAsArrayBuffer(file);
 }
 
 devicesRef.push(WURFL);
@@ -111,7 +84,7 @@ firebase.auth().onAuthStateChanged(function(user) {
         let facesStr = "";
         let labelsStr = "Labels found: ";
 
-        if (latestImgData != null) {
+        if (latestImgData !== null) {
 
             if (latestImgData.faceAnnotations) {
                 facesStr += "Found a face!";
@@ -147,16 +120,16 @@ firebase.auth().onAuthStateChanged(function(user) {
     firebase.auth().signInWithRedirect(provider).then(function(result) {
       // This gives you a the Twitter OAuth 1.0 Access Token and Secret.
       // You can use these server side with your app's credentials to access the Twitter API.
-      var token = result.credential.accessToken;
-      var secret = result.credential.secret;
+      let token = result.credential.accessToken;
+      let secret = result.credential.secret;
       // The signed-in user info.
-      var user = result.user;
+      let user = result.user;
 
     }).catch(function(error) {
 
-      var errorCode = error.code;
-      var errorMessage = error.message;
-      var credential = error.credential;
+      let errorCode = error.code;
+      let errorMessage = error.message;
+      let credential = error.credential;
     });
   }
 });
@@ -172,9 +145,9 @@ function valueToEmoji(emotion) {
     } else if (emotion === "surprise") {
         return " :‑o";
     } else {
-        return "🤔";
+        return ":-/";
     }
-};
+}
 
 
 
@@ -189,9 +162,9 @@ facesRef.on('value', function(snap) {
         faceCount.push(faceData.val());
     });
 
-    var faceChart = document.getElementById("faceChart");
+    let faceChart = document.getElementById("faceChart");
 
-    var htChart = new Chart(faceChart, {
+    let htChart = new Chart(faceChart, {
         type: 'horizontalBar',
         data: {
             labels: faceLabels,
@@ -242,9 +215,9 @@ entitiesRef.orderByValue().limitToLast(10).on('value', function(snap) {
         counts.push(labelData.val());
     });
 
-    var labelsChart = document.getElementById("labelsChart");
+    let labelsChart = document.getElementById("labelsChart");
 
-    var htChart = new Chart(labelsChart, {
+    let htChart = new Chart(labelsChart, {
         type: 'horizontalBar',
         data: {
             labels: labels.reverse(),
@@ -282,9 +255,9 @@ entitiesRef.orderByValue().limitToLast(10).on('value', function(snap) {
 
 
 function rotateBase64Image90Degree(base64data, imageRef) {
-  var canvas = document.getElementById("c");
-  var ctx = canvas.getContext("2d");
-  var image = new Image();
+  let canvas = document.getElementById("c");
+  let ctx = canvas.getContext("2d");
+  let image = new Image();
 
   image.src = base64data;
   image.onload = function() {
@@ -306,19 +279,18 @@ $(function() {
 
       if (userId) {
          $('.img-load-spinner').addClass('is-active');
-         var fileName = $(this).val();
          $("#img-status").html("Uploading to Firebase...");
 
 
-          var elm = document.getElementById('img-select'),
+          let elm = document.getElementById('img-select'),
               img = elm.files[0],
               fileName = img.name,
               fileSize = img.size;
 
-          var reader = new FileReader();
+          let reader = new FileReader();
 
           reader.onload = function(e) {
-            var dataURL = reader.result;
+            let dataURL = reader.result;
 
             let imageRef = storageRef.child(userId + '/' + fileName);
             if (isiPhone) {
@@ -326,7 +298,7 @@ $(function() {
             } else {
               writeImgtoFb(dataURL, imageRef);
             }
-          }
+          };
           reader.readAsDataURL(img);
       }
    });
@@ -336,7 +308,7 @@ latestImageRef.on('value', function(data) {
     let gsRef = storage.refFromURL(data.val().gcsUrl);
     gsRef.getDownloadURL().then(function(url) {
       $('.img-load-spinner').removeClass('is-active');
-      var img = document.getElementById('latest-selfie');
+      let img = document.getElementById('latest-selfie');
       img.src = url;
 
 
@@ -345,4 +317,3 @@ latestImageRef.on('value', function(data) {
     });
 
 });
-
