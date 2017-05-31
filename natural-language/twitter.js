@@ -41,7 +41,7 @@ client.stream('statuses/filter', {track: searchTerms, language: 'en'}, function(
   stream.on('data', function(event) {
 		// Exclude tweets starting with "RT"
    		if ((event.text != undefined) && (event.text.substring(0,2) != 'RT')) {
-   			// callNLApi(event);
+   			callNLApi(event);
    			console.log(event.text);
    		}
 
