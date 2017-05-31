@@ -36,7 +36,8 @@ This repo includes 4 demos from my [Google Next talk](https://youtu.be/w1xNTLH1z
 4. Create a BigQuery dataset and table, add them to `local.json`
 5. Generate an API key and add it to `local.json`
 6. Change line 37 to filter tweets on whichver terms you'd like
-7. Run the script: `node twitter.js`
+7. Install node modules: `npm install`
+8. Run the script: `node twitter.js`
 
 ## Multiple API demo
 
