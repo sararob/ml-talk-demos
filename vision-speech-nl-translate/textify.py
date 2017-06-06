@@ -77,7 +77,7 @@ def call_nl_api(text):
     output_text = colored(analyze_sentiment(score), "cyan")
     if response['entities']:
         entities = str(analyze_entities(response['entities']))
-        output_text += colored("\nEntities found: " + entities, "cyan")
+        output_text += colored("\nEntities found: " + entities, "white")
     return [output_text, response['language']]
 
 
@@ -98,9 +98,9 @@ def translate_text_with_model(text, model=translate.NMT):
         target_language="en",
         model=model)
     print(colored(("Translated in " + lang +
-                   ": " + result['translatedText']), "cyan"))
+                   ": " + result['translatedText']), "white"))
     print(colored("Your text translated back to English: " +
-                  translate_back['translatedText'], "cyan"))
+                  translate_back['translatedText'], "white"))
 
 
 def call_speech():
@@ -190,7 +190,7 @@ def handle_nl_and_translate_call(text):
     analyzed_text = nl_response[0]
     print(analyzed_text)
     translate_ready = input(colored("Next, we'll translate your text using" +
-                                    "Neural Machine Translation.\n" +
+                                    " Neural Machine Translation.\n" +
                                     "Press enter when you're ready\n", "cyan"))
     if translate_ready == "":
         translate_text_with_model(text)
@@ -214,9 +214,9 @@ elif STEP_ONE == 'p':
     URL = input(colored("Enter the filepath of your image: ", "cyan"))
     if os.path.exists(URL):
         print(colored("Valid image URL, sending your image" +
-                      "to the Vision API...", "cyan"))
+                      " to the Vision API...", "cyan"))
         IMG_TEXT = call_vision(URL)
-        print(colored("Found this text in your image: \n" + IMG_TEXT, "cyan"))
+        print(colored("Found this text in your image: \n" + IMG_TEXT, "white"))
         handle_nl_and_translate_call(IMG_TEXT)
 else:
     STEP_ONE = input("That's not a valid entry.")

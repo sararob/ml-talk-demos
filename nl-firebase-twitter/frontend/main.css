@@ -1,0 +1,56 @@
+.chart-container {
+  width: 500px;
+  height: 500px;
+  display: inline-block;
+  position: absolute;
+  margin: 30px;
+}
+
+@media (max-width: 600px) {
+  body { margin-top: 0; background: white; box-shadow: none; }
+  body { border-top: 16px solid #ffa100; }
+}
+
+
+#latest-sentiment {
+  font-size: 25px;
+}
+
+.title {
+  font-size: 16px;
+}
+
+.pos {
+  color: #03A9F4;
+  font-weight: bold;
+}
+
+.latest-tweet-header {
+  margin-bottom: -20px;
+}
+
+#sentiment-plot {
+  background-color: #03A9F4;
+  width: 400px;
+  height: 30px;
+  z-index: 1;
+  position: absolute;
+}
+
+#current-sentiment-val, #current-sentiment-latest-val {
+  height: 30px;
+  width: 4px;
+  background-color: #FFC107;
+  margin-top: -30px;
+  position: absolute;
+  z-index: 2;
+  margin-top: 0px;
+}
+
+#android-emoji-sad, #android-emoji-happy {
+  width: 40px;
+}
+
+#android-emoji-sad {
+  margin-left: 318px;
+}

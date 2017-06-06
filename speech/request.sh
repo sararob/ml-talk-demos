@@ -20,9 +20,10 @@ cat <<EOF > $FILENAME
 {
   "config": {
     "encoding":"FLAC",
-    "sample_rate":16000,
+    "sampleRateHertz":16000,
+    "profanityFilter": true,
     "languageCode": "en-US",
-    "speechContext": {
+    "speechContexts": {
       "phrases": ['']
     },
     "maxAlternatives": 1
@@ -55,6 +56,6 @@ read -p $'\nPress enter when you\'re ready to call the Speech API' var
 if [ -z $var ];
   then
     echo "Running the following curl command:"
-    echo "curl -s -X POST -H 'Content-Type: application/json' --data-binary @${FILENAME} https://speech.googleapis.com/v1beta1/speech:syncrecognize?key=API_KEY"
-    curl -s -X POST -H "Content-Type: application/json" --data-binary @${FILENAME} https://speech.googleapis.com/v1beta1/speech:syncrecognize?key=YOUR_API_KEY
+    echo "curl -s -X POST -H 'Content-Type: application/json' --data-binary @${FILENAME} https://speech.googleapis.com/v1/speech:recognize?key=API_KEY"
+    curl -s -X POST -H "Content-Type: application/json" --data-binary @${FILENAME} https://speech.googleapis.com/v1/speech:recognize?key=YOUR_API_KEY
 fi

@@ -1,0 +1,14 @@
+{
+  "rules": {
+    ".read": true,
+    ".write": "auth != null",
+    "tokens": {
+    	"ADJ": {
+    		".indexOn": ".value"
+    	}
+    },
+    "hashtags": {
+    	".indexOn": "numMentions"
+    }
+  }
+}

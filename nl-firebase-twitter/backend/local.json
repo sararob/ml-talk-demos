@@ -1,0 +1,10 @@
+{
+	"twitter_consumer_key": "",
+	"twitter_consumer_secret": "",
+	"twitter_access_key": "",
+	"twitter_access_secret": "",
+	"project_id": "",
+	"bigquery_dataset": "",
+	"bigquery_table": "",
+	"cloud_api_key": ""
+}

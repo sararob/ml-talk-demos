@@ -41,6 +41,18 @@ const latestImgDataRef = db.ref('latestImgData');
 const emotions = ['anger','joy','sorrow','surprise'];
 let userRef;
 
+// Use a Firebase transaction to increment a counter
+function incrementCount(ref, child, valToIncrement) {
+  ref.child(child).transaction(function(data) {
+    if (data != null) {
+      data += valToIncrement;
+    } else {
+      data = 1;
+    }
+    return data;
+  });
+}
+
 function detectFacesAndLabels(faces, entities) {
     if (faces) {
       for (let i in faces) {
@@ -48,14 +60,7 @@ function detectFacesAndLabels(faces, entities) {
         for (let j in emotions) {
           let emotion = emotions[j];
           if ((face[emotion + 'Likelihood'] === "VERY_LIKELY") || (face[emotion + 'Likelihood'] === "LIKELY") || (face[emotion + 'Likelihood'] === "POSSIBLE")) {
-            faceRef.child(emotion).transaction(function(data) {
-              if (data !== null) {
-                data++;
-              } else {
-                data = 1;
-              }
-              return data;
-            });
+            incrementCount(faceRef, emotion, 1);
           }
         }
       }
@@ -65,14 +70,7 @@ function detectFacesAndLabels(faces, entities) {
       for (let i in entities) {
         let entity = entities[i].description.toLowerCase();
         entity.replace(/\.|#|\$|\[|\]|\//g,''); // Remove ".", "#", "$", "[", or "]" (illegal Firebase path name)
-        entitiesRef.child(entity).transaction(function(data) {
-          if (data !== null) {
-            data++;
-          } else {
-            data= 1;
-          }
-          return data;
-        });
+        incrementCount(entitiesRef, entity, 1);
       }
     }
 }

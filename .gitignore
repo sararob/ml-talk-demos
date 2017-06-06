@@ -1,3 +1,5 @@
 node_modules/
 *.log
 *.firebaserc
+*.eslintrc.js
+nl-firebase-twitter/backend/local.sample.json
