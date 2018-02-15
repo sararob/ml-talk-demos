@@ -79,37 +79,36 @@ function incrementCount(ref, child, valToIncrement) {
 
 
 tweetRef.on('value', function (snap) {
-    let tweet = snap.val();
-    let tokens = tweet['tokens'];
-    let hashtags = tweet['hashtags'];
-
-    for (let i in tokens) {
-      let token = tokens[i];
-      let word = token.lemma.toLowerCase();
-
-      if ((acceptedWordTypes.indexOf(token.partOfSpeech.tag) != -1) && !(word.match(/[^A-Za-z0-9]/g))) {
-        let posRef = db.ref('tokens/' + token.partOfSpeech.tag);
-        incrementCount(posRef, word, 1);
+    if (snap.exists()) {
+      let tweet = snap.val();
+      let tokens = tweet['tokens'];
+      let hashtags = tweet['hashtags'];
+  
+      for (let i in tokens) {
+        let token = tokens[i];
+        let word = token.lemma.toLowerCase();
+  
+        if ((acceptedWordTypes.indexOf(token.partOfSpeech.tag) != -1) && !(word.match(/[^A-Za-z0-9]/g))) {
+          let posRef = db.ref('tokens/' + token.partOfSpeech.tag);
+          incrementCount(posRef, word, 1);
+        }
+  
       }
-
-    }
-
-    if (hashtags) {
-      for (let i in hashtags) {
-        let ht = hashtags[i];
-        let text = ht.text.toLowerCase();
-        let htRef = hashtagRef.child(text);
-        incrementCount(htRef, 'totalScore', tweet.score);
-        incrementCount(htRef, 'numMentions', 1);
+  
+      if (hashtags) {
+        for (let i in hashtags) {
+          let ht = hashtags[i];
+          let text = ht.text.toLowerCase();
+          let htRef = hashtagRef.child(text);
+          incrementCount(htRef, 'totalScore', tweet.score);
+          incrementCount(htRef, 'numMentions', 1);
+        }
       }
     }
-
-
 });
 
 
 const acceptedWordTypes = ['ADJ']; // Add the parts of speech you'd like to graph to this array ('NOUN', 'VERB', etc.)
-
 
 function callNLApi(tweet) {
         const textUrl = "https://language.googleapis.com/v1/documents:annotateText?key=" + config.cloud_api_key;
