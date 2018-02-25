@@ -10,8 +10,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "google-cloud": "^0.47.0",
-    "request": "^2.79.0",
-    "twitter": "^1.7.0"
+    "@google-cloud/bigquery": "^1.0.0",
+    "async": "^2.6.0",
+    "request": "^2.83.0",
+    "twitter": "^1.7.1"
   }
 }
