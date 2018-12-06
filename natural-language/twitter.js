@@ -22,7 +22,8 @@ const client = new Twitter(config.twitter);
 // Set up BigQuery
 // Replace this with the name of your project and the path to your keyfile
 const bigquery = require('@google-cloud/bigquery')({
-  projectId: config.cloud_project_id
+  projectId: config.cloud_project_id,
+  keyFilename: config.keyfile_path
 });
 const dataset = bigquery.dataset(config.bigquery_dataset);
 const table = dataset.table(config.bigquery_table);
