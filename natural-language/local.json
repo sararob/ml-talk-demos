@@ -6,6 +6,7 @@
 	  "access_token_secret": "ACCESS_SECRET"
 	},
 	"nl_api_key": "your_nl_api_key",
+	"keyfile_path": "~/path_to_your_keyfile.json",
 	"cloud_project_id": "your_cloud_project",
 	"bigquery_dataset": "your_bq_dataset",
 	"bigquery_table": "your_bq_table"
