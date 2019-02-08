@@ -70,6 +70,8 @@ database.ref('latest').on('value', function(data) {
   let scaledSentiment = (scaleWidthPx * (currentScore + 1)) / 2;
   $('#current-sentiment-latest-val').css('margin-left', scaledSentiment + 'px');
 
+}, function (errorObject) {
+  console.log("The read failed: " + errorObject.code);
 });
 
 Chart.defaults.global.defaultFontColor = '#03A9F4';
